@@ -5,13 +5,14 @@ import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { LayoutDashboard, ShoppingBag, Package, User } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, User, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
   { href: '/dashboard/orders', label: 'Mis compras', icon: ShoppingBag },
   { href: '/dashboard/products', label: 'Mis productos', icon: Package },
+  { href: '/dashboard/categories', label: 'Categorías', icon: Tag },
   { href: '/dashboard/profile', label: 'Perfil', icon: User },
 ];
 
