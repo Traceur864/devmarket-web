@@ -35,6 +35,8 @@ export function ProductCard({ product }: ProductCardProps) {
               src={product.previewUrl}
               alt={product.title}
               fill
+              loading='eager'
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               className="object-cover"
             />
           ) : (

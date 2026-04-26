@@ -100,7 +100,7 @@ export default function ProductPage() {
               alt={product.title}
               width={800}
               height={450}
-              loading="eager"
+              loading='eager'
               className="w-full h-full object-cover rounded-lg"
             />
           ) : (

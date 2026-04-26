@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Plus } from 'lucide-react';
+import { Package, Pencil, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -114,6 +114,11 @@ export default function MyProductsPage() {
                     Publicar
                   </Button>
                 )}
+                <Button size="sm" variant="ghost" asChild>
+                  <Link href={`/dashboard/products/${product.slug}/edit`}>
+                    <Pencil className="w-4 h-4" />
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
