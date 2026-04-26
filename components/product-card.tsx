@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-4">
           {/* Categoria */}
           <Badge variant="secondary" className="mb-2 text-xs">
-            {product.category.name}
+            {product.category?.name ?? 'Sin categoría'}
           </Badge>
 
           {/* Titulo */}
@@ -57,7 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Seller */}
           <p className="text-xs text-muted-foreground">
-            por {product.seller.name}
+            por {product.seller?.name ?? 'Desconocido'}
           </p>
 
           {/* Tags */}
@@ -83,7 +83,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Reviews */}
           <span className="text-xs text-muted-foreground">
-            {product._count.reviews} reseñas
+            {product._count?.reviews ?? 0} reseñas
           </span>
         </CardFooter>
       </Card>
