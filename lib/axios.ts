@@ -8,7 +8,6 @@ export const api = axios.create({
   },
 });
 
-// Interceptor para agregar el token en cada request
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   if (token) {
@@ -17,14 +16,41 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para manejar errores globalmente
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const { refreshToken, setAuth, clearAuth, user } = useAuthStore.getState();
+
+      if (!refreshToken) {
+        clearAuth();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          {},
+          { headers: { Authorization: `Bearer ${refreshToken}` } },
+        );
+
+        const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+        setAuth(user!, accessToken, newRefreshToken);
+
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        return api(originalRequest);
+      } catch {
+        clearAuth();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
     }
+
     return Promise.reject(error);
   },
 );
