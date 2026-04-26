@@ -1,10 +1,13 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package } from 'lucide-react';
+import { Package, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface Product {
   id: string;
@@ -13,13 +16,8 @@ interface Product {
   price: number;
   status: string;
   createdAt: string;
-  category: {
-    name: string;
-  };
-  _count: {
-    reviews: number;
-    orderItems: number;
-  };
+  category: { name: string };
+  _count: { reviews: number; orderItems: number };
 }
 
 const statusColors: Record<string, string> = {
@@ -35,11 +33,24 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function MyProductsPage() {
+  const queryClient = useQueryClient();
+
   const { data: products, isLoading } = useQuery({
     queryKey: ['my-products'],
     queryFn: async () => {
       const response = await api.get('/products/my-products');
       return response.data.data as Product[];
+    },
+  });
+
+  const publishMutation = useMutation({
+    mutationFn: (slug: string) => api.patch(`/products/${slug}/publish`),
+    onSuccess: () => {
+      toast.success('Producto publicado correctamente');
+      void queryClient.invalidateQueries({ queryKey: ['my-products'] });
+    },
+    onError: () => {
+      toast.error('Error al publicar el producto');
     },
   });
 
@@ -67,7 +78,15 @@ export default function MyProductsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Mis productos</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Mis productos</h1>
+        <Button asChild>
+          <Link href="/dashboard/products/new">
+            <Plus className="w-4 h-4 mr-2" />
+            Crear producto
+          </Link>
+        </Button>
+      </div>
       <div className="flex flex-col gap-4">
         {products.map((product) => (
           <Card key={product.id}>
@@ -78,11 +97,23 @@ export default function MyProductsPage() {
               </Badge>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <span>{product.category.name}</span>
-                <span>${(product.price / 100).toFixed(2)}</span>
-                <span>{product._count.orderItems} ventas</span>
-                <span>{product._count.reviews} reseñas</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                  <span>{product.category.name}</span>
+                  <span>${(product.price / 100).toFixed(2)}</span>
+                  <span>{product._count.orderItems} ventas</span>
+                  <span>{product._count.reviews} reseñas</span>
+                </div>
+                {product.status === 'DRAFT' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => publishMutation.mutate(product.slug)}
+                    disabled={publishMutation.isPending}
+                  >
+                    Publicar
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
