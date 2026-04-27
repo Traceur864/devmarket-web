@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 const loginSchema = z.object({
@@ -26,15 +25,23 @@ export default function LoginPage() {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
-          <CardDescription>
-            Bienvenido de nuevo a DevMarket
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Gradiente de fondo */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5 pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <Link href="/" className="font-bold text-2xl">
+            Dev<span className="text-primary">Market</span>
+          </Link>
+          <p className="text-muted-foreground mt-2">Bienvenido de nuevo</p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-xl shadow-black/5">
+          <h1 className="text-2xl font-bold mb-6">Iniciar sesión</h1>
+
           <form onSubmit={form.handleSubmit((data) => login(data))}>
             <FieldGroup>
               <Controller
@@ -43,7 +50,7 @@ export default function LoginPage() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Email</FieldLabel>
-                    <Input {...field} type="email" placeholder="tu@email.com" />
+                    <Input {...field} type="email" placeholder="tu@email.com" className="h-11" />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
@@ -54,24 +61,25 @@ export default function LoginPage() {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Contraseña</FieldLabel>
-                    <Input {...field} type="password" placeholder="••••••" />
+                    <Input {...field} type="password" placeholder="••••••" className="h-11" />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
             </FieldGroup>
-            <Button type="submit" className="w-full mt-4" disabled={isLoggingIn}>
+            <Button type="submit" className="w-full mt-6 h-11" disabled={isLoggingIn}>
               {isLoggingIn ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </Button>
           </form>
-          <p className="text-center text-sm text-muted-foreground mt-4">
+
+          <p className="text-center text-sm text-muted-foreground mt-6">
             ¿No tienes cuenta?{' '}
-            <Link href="/register" className="text-primary hover:underline">
-              Regístrate
+            <Link href="/register" className="text-primary hover:underline font-medium">
+              Regístrate gratis
             </Link>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
