@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
@@ -22,7 +22,7 @@ interface Product {
   _count: { reviews: number };
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('q') ?? '');
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -68,7 +68,7 @@ export default function SearchPage() {
         </div>
       ) : !data || data.length === 0 ? (
         <p className="text-muted-foreground">
-            No se encontraron resultados para &quot;{query}&quot;
+          No se encontraron resultados para &quot;{query}&quot;
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -78,5 +78,17 @@ export default function SearchPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="h-96 bg-muted animate-pulse rounded-lg" />
+      </main>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
